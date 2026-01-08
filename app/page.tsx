@@ -22,7 +22,7 @@ import { TEAMS } from '@/app/constants';
 import { MatchCard, Team } from '@/components/MatchCard';
 import { useEffect, useRef, useState } from 'react';
 import { toJpeg } from 'html-to-image';
-import { Share2, Download, Trophy, RotateCcw } from 'lucide-react';
+import { Share2, Download, Trophy, RotateCcw, ChevronRight } from 'lucide-react';
 import { FlagImage } from '@/components/FlagImage';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -31,12 +31,15 @@ export default function BracketPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const shareRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [showScrollHint, setShowScrollHint] = useState(false);
 
   // Scroll position on mount
   useEffect(() => {
     if (window.innerWidth < 768) {
       // Mobile: Start at left (Quarter Finals) - easier to understand flow
       scrollToLeft();
+      // Show hint after a brief delay
+      setTimeout(() => setShowScrollHint(true), 1000);
     } else {
       // Desktop: Center on the Final
       scrollToCenter();
@@ -152,6 +155,11 @@ export default function BracketPage() {
       {/* Main Scrollable Area - no zoom, just simple horizontal scroll */}
       <div
         ref={scrollContainerRef}
+        onScroll={() => {
+          if (showScrollHint && scrollContainerRef.current && scrollContainerRef.current.scrollLeft > 50) {
+            setShowScrollHint(false);
+          }
+        }}
         className="flex-1 flex overflow-x-auto snap-x snap-mandatory overflow-y-auto md:overflow-x-hidden md:justify-center no-scrollbar touch-pan-x"
       >
         {/* LEFT SECTION (QF1, QF4 -> SF1) */}
@@ -400,6 +408,24 @@ export default function BracketPage() {
             <div className="text-7xl">can2026.xyz</div>
           </div>
         </div>
+
+        {/* Mobile Scroll Hint */}
+        <AnimatePresence>
+          {showScrollHint && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="fixed bottom-24 right-4 z-50 md:hidden pointer-events-none"
+            >
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse">
+                <span className="text-xs font-bold uppercase tracking-widest">Swipe</span>
+                <ChevronRight size={16} className="animate-bounce-x" />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
       </div>
     </main>
   );

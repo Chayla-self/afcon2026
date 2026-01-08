@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   description: "Predict the roadmap to the AFCON 2025 final! Select your winners and share your champion.",
 };
 
+import { Analytics } from "@vercel/analytics/next";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -24,6 +26,7 @@ export default function RootLayout({
       <body className={`${outfit.variable} font-sans antialiased text-white bg-black`}>
         <Navbar />
         {children}
+        <Analytics />
       </body>
     </html>
   );
