@@ -395,8 +395,9 @@ export default function BracketPage() {
             </div>
           </div>
 
-          <div className="absolute bottom-8 text-white/30 text-3xl font-bold tracking-widest uppercase">
-            can2026.xyz
+          <div className="absolute bottom-10 flex flex-col items-center gap-2 text-white/30 font-bold tracking-widest uppercase">
+            <div className="text-2xl">Make Yours At</div>
+            <div className="text-7xl">can2026.xyz</div>
           </div>
         </div>
       </div>
