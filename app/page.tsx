@@ -156,8 +156,16 @@ export default function BracketPage() {
       <div
         ref={scrollContainerRef}
         onScroll={() => {
-          if (showScrollHint && scrollContainerRef.current && scrollContainerRef.current.scrollLeft > 50) {
-            setShowScrollHint(false);
+          if (scrollContainerRef.current) {
+            const { scrollLeft, clientWidth } = scrollContainerRef.current;
+            // Hide hint only when approaching the rightmost section (Right Bracket)
+            // Center section is at 100vw (1.0 * clientWidth). We want it visible there.
+            // Right section starts at 200vw (2.0 * clientWidth).
+            // So hide it once we pass the middle of the Final section (~1.5 * clientWidth)
+            const shouldShow = scrollLeft < (clientWidth * 1.5);
+            if (showScrollHint !== shouldShow) {
+              setShowScrollHint(shouldShow);
+            }
           }
         }}
         className="flex-1 flex overflow-x-auto snap-x snap-mandatory overflow-y-auto md:overflow-x-hidden md:justify-center no-scrollbar touch-pan-x"
