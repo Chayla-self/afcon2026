@@ -10,8 +10,8 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "AFCON 2025 - Road to the Final",
-  description: "Predict the roadmap to the AFCON 2025 final! Select your winners and share your champion.",
+  title: "AFCON 2026 - Road to the Final",
+  description: "Predict the roadmap to the AFCON 2026 final! Select your winners and share your champion.",
 };
 
 import { Analytics } from "@vercel/analytics/next";

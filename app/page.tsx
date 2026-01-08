@@ -117,7 +117,7 @@ export default function BracketPage() {
       });
 
       const link = document.createElement('a');
-      link.download = `afcon-2025-my-champion-${winners.final}.jpg`;
+      link.download = `afcon-2026-my-champion-${winners.final}.jpg`;
       link.href = dataUrl;
       link.click();
     } catch (err) {
@@ -340,7 +340,7 @@ export default function BracketPage() {
           {/* Header */}
           <div className="absolute top-8 w-full text-center z-10">
             <h1 className="text-7xl font-black italic tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-yellow-600 drop-shadow-2xl">
-              AFCON 2025 PREDICTOR
+              AFCON 2026 PREDICTOR
             </h1>
             <p className="text-3xl text-white/60 mt-2 font-bold tracking-[0.3em] uppercase">My Road to the Final</p>
           </div>
