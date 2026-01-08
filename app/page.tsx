@@ -31,19 +31,23 @@ export default function BracketPage() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const shareRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
-  const [isMobileOverview, setIsMobileOverview] = useState(false);
 
-  // Scroll to center on mount for mobile
-  // Scroll to center on mount for mobile
+  // Scroll position on mount
   useEffect(() => {
-    // Check if mobile
     if (window.innerWidth < 768) {
-      setIsMobileOverview(true);
+      // Mobile: Start at left (Quarter Finals) - easier to understand flow
+      scrollToLeft();
     } else {
-      // Desktop: Center immediately
+      // Desktop: Center on the Final
       scrollToCenter();
     }
   }, []);
+
+  const scrollToLeft = () => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+    }
+  };
 
   const scrollToCenter = () => {
     if (scrollContainerRef.current) {
@@ -54,12 +58,6 @@ export default function BracketPage() {
         container.scrollTo({ left: scrollX, behavior: 'smooth' });
       }
     }
-  };
-
-  const handleStartPrediction = () => {
-    setIsMobileOverview(false);
-    // Add a slight delay to allow layout to snap back before scrolling
-    setTimeout(scrollToCenter, 100);
   };
 
   const handleWinner = (matchId: keyof BracketState['winners'], teamName: string) => {
@@ -151,54 +149,20 @@ export default function BracketPage() {
         </button>
       </header>
 
-      {/* Mobile Overview Overlay */}
-      <AnimatePresence>
-        {isMobileOverview && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm md:hidden"
-            onClick={handleStartPrediction}
-          >
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-3 bg-white text-black font-black uppercase tracking-wider rounded-full shadow-[0_0_20px_rgba(255,255,255,0.4)] animate-pulse"
-            >
-              Tap to Predict
-            </motion.button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Main Scrollable Area */}
-      <motion.div
+      {/* Main Scrollable Area - no zoom, just simple horizontal scroll */}
+      <div
         ref={scrollContainerRef}
-        className="flex-1 flex overflow-x-auto snap-x snap-mandatory overflow-y-auto md:overflow-x-hidden md:justify-center py-20 no-scrollbar touch-pan-x"
-        animate={isMobileOverview ? {
-          scale: 0.33,
-          width: '300%', // Triple width to fit 3 screens
-          x: '-33.33%', // Center the 300% width
-          overflowX: 'hidden'
-        } : {
-          scale: 1,
-          width: '100%',
-          x: 0,
-          overflowX: 'auto'
-        }}
-        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="flex-1 flex overflow-x-auto snap-x snap-mandatory overflow-y-auto md:overflow-x-hidden md:justify-center no-scrollbar touch-pan-x"
       >
         {/* LEFT SECTION (QF1, QF4 -> SF1) */}
-        {/* LEFT SECTION (QF1, QF4 -> SF1) */}
-        <section className="snap-center min-w-[100vw] md:min-w-fit min-h-full flex flex-col md:flex-row justify-center items-center p-4 md:p-2 py-12 relative">
-          <div className="md:hidden absolute top-4 left-4 text-white/20 text-xs font-bold rotate-90 origin-top-left">LEFT BRACKET</div>
+        <section className="snap-start min-w-[100vw] md:min-w-fit min-h-full flex flex-col md:flex-row justify-start md:justify-center items-center p-4 pt-8 md:p-2 relative overflow-y-auto md:overflow-visible">
+          <div className="md:hidden absolute top-2 left-4 text-white/20 text-xs font-bold rotate-90 origin-top-left">LEFT BRACKET</div>
 
           {/* Desktop Wrapper: Flex Row */}
-          <div className="flex flex-col md:flex-row items-center gap-8 w-full max-w-sm md:max-w-none">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 w-full max-w-sm md:max-w-none pb-20 md:pb-0">
 
             {/* Column 1: Quarter Finals */}
-            <div className="flex flex-col gap-8 md:gap-12">
+            <div className="flex flex-col gap-4 md:gap-12 w-full">
               <MatchCard
                 id="q1"
                 title="Quarter Final 1"
@@ -220,7 +184,6 @@ export default function BracketPage() {
             </div>
 
             {/* Desktop Connector Logic */}
-            {/* Desktop Connector Logic */}
             <div className="hidden md:block w-4 border-t-2 border-white/10 relative">
               <div className="absolute top-[-7rem] left-0 w-[1px] h-[14rem] bg-white/10" />
               <div className="absolute top-[-7rem] left-0 w-4 border-t border-white/10" />
@@ -228,7 +191,7 @@ export default function BracketPage() {
             </div>
 
             {/* Column 2: Semi Final 1 */}
-            <div className="flex flex-col justify-center">
+            <div className="flex flex-col justify-center w-full mt-4 md:mt-0">
               <div className="md:hidden text-center text-xs text-yellow-500/50 mb-2 font-bold uppercase tracking-widest">Semi Final 1</div>
               <MatchCard
                 id="sf1"
@@ -245,13 +208,13 @@ export default function BracketPage() {
         </section>
 
         {/* CENTER SECTION (FINAL) */}
-        <section className="snap-center min-w-[100vw] md:min-w-[380px] min-h-full flex flex-col justify-center items-center p-6 py-12 relative z-10">
+        <section className="snap-center min-w-[100vw] md:min-w-[380px] min-h-full flex flex-col justify-center items-center p-4 py-12 relative z-10 overflow-y-auto md:overflow-visible">
           <AnimatePresence mode="wait">
             <motion.div
               key="final-card"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="w-full max-w-md relative"
+              className="w-full max-w-md relative pb-20 md:pb-0"
             >
               {/* Trophy Glow */}
               <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-64 bg-yellow-500/20 blur-[100px] rounded-full pointer-events-none" />
@@ -296,15 +259,14 @@ export default function BracketPage() {
         </section>
 
         {/* RIGHT SECTION (QF2, QF3 -> SF2) */}
-        {/* RIGHT SECTION (QF2, QF3 -> SF2) */}
-        <section className="snap-center min-w-[100vw] md:min-w-fit min-h-full flex flex-col md:flex-row-reverse justify-center items-center p-4 md:p-2 py-12 relative">
-          <div className="md:hidden absolute top-4 right-4 text-white/20 text-xs font-bold -rotate-90 origin-top-right">RIGHT BRACKET</div>
+        <section className="snap-start min-w-[100vw] md:min-w-fit min-h-full flex flex-col md:flex-row-reverse justify-start md:justify-center items-center p-4 pt-8 md:p-2 relative overflow-y-auto md:overflow-visible">
+          <div className="md:hidden absolute top-2 right-4 text-white/20 text-xs font-bold -rotate-90 origin-top-right">RIGHT BRACKET</div>
 
           {/* Desktop Wrapper: Flex Row Reverse */}
-          <div className="flex flex-col md:flex-row-reverse items-center gap-8 md:gap-4 w-full max-w-sm md:max-w-none">
+          <div className="flex flex-col md:flex-row-reverse items-center gap-4 md:gap-8 w-full max-w-sm md:max-w-none pb-20 md:pb-0">
 
             {/* Column 1 (Rightmost): Quarter Finals */}
-            <div className="flex flex-col gap-8 md:gap-12">
+            <div className="flex flex-col gap-4 md:gap-12 w-full">
               <MatchCard
                 id="q2"
                 title="Quarter Final 2"
@@ -333,7 +295,7 @@ export default function BracketPage() {
             </div>
 
             {/* Column 2: Semi Final 2 */}
-            <div className="flex flex-col justify-center">
+            <div className="flex flex-col justify-center w-full mt-4 md:mt-0">
               <div className="md:hidden text-center text-xs text-yellow-500/50 mb-2 font-bold uppercase tracking-widest">Semi Final 2</div>
               <MatchCard
                 id="sf2"
@@ -348,7 +310,7 @@ export default function BracketPage() {
             </div>
           </div>
         </section>
-      </motion.div>
+      </div>
 
       {/* Hidden Export Layout (1920x1080 Landscape Full Bracket) */}
       <div className="fixed left-[-9999px] top-0 pointer-events-none">
